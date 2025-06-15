@@ -17,6 +17,12 @@ spec:
               backend: local
               local:
                 path: /data/tempo
+        extraVolumeMounts:
+          - name: tempo-storage
+            mountPath: /data/tempo
+        extraVolumes:
+          - name: tempo-storage
+            emptyDir: {}
   destination:
     namespace: o11y
     server: https://kubernetes.default.svc
