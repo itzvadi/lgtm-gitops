@@ -13,7 +13,9 @@ spec:
       values: |
         mode: daemon
 
-        config:
+        configMap:
+          create: true
+          name: "alloy-config"
           content: |
             prometheus.exporter.unix "local_system" { }
 
@@ -66,14 +68,14 @@ spec:
           - /etc/alloy/config.alloy
 
         extraVolumeMounts:
-          - name: config
+          - name: alloy-config
             mountPath: /etc/alloy/config.alloy
             subPath: config.alloy
 
         extraVolumes:
-          - name: config
+          - name: alloy-config
             configMap:
-              name: alloy
+              name: alloy-config
   destination:
     server: https://kubernetes.default.svc
     namespace: o11y
