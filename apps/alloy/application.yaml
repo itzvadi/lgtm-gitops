@@ -13,6 +13,7 @@ spec:
       values: |
         alloy:
          configMap:
+           create: true
            content: |-
              // Write your Alloy config here:
              logging {
