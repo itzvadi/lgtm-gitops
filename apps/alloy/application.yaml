@@ -11,49 +11,64 @@ spec:
     targetRevision: 1.1.1
     helm:
       values: |
-        config: |
-          prometheus.exporter.unix "local_system" { }
+        configMap:
+          create: true
+          name: "alloy-config"
+          content: |
+            prometheus.exporter.unix "local_system" { }
 
-          prometheus.scrape "scrape_metrics" {
-            targets         = prometheus.exporter.unix.local_system.targets
-            forward_to      = [prometheus.remote_write.metrics_service.receiver]
-            scrape_interval = "10s"
-          }
+            prometheus.scrape "scrape_metrics" {
+              targets         = prometheus.exporter.unix.local_system.targets
+              forward_to      = [prometheus.remote_write.metrics_service.receiver]
+              scrape_interval = "10s"
+            }
 
-          prometheus.remote_write "metrics_service" {
-            endpoint {
-              url = "http://mimir:9009/api/v1/push"
-              headers = {
-                "X-Scope-OrgID" = "staging",
+            prometheus.remote_write "metrics_service" {
+              endpoint {
+                url = "http://mimir:9009/api/v1/push"
+                headers = {
+                  "X-Scope-OrgID" = "staging",
+                }
               }
             }
-          }
 
-          local.file_match "local_files" {
-            path_targets = [{"__path__" = "/var/log/*.log"}, {"__path__" = "/logs/dummy.log"}]
-            sync_period = "5s"
-          }
-
-          loki.source.file "log_scrape" {
-            targets       = local.file_match.local_files.targets
-            forward_to    = [loki.process.filter_logs.receiver]
-            tail_from_end = true
-          }
-
-          loki.process "filter_logs" {
-            stage.drop {
-              source      = ""
-              expression  = ".*Connection closed by authenticating user root"
-              drop_counter_reason = "noisy"
+            local.file_match "local_files" {
+              path_targets = [{"__path__" = "/var/log/*.log"}, {"__path__" = "/logs/dummy.log"}]
+              sync_period = "5s"
             }
-            forward_to = [loki.write.grafana_loki.receiver]
-          }
 
-          loki.write "grafana_loki" {
-            endpoint {
-              url = "http://loki:3100/loki/api/v1/push"
+            loki.source.file "log_scrape" {
+              targets       = local.file_match.local_files.targets
+              forward_to    = [loki.process.filter_logs.receiver]
+              tail_from_end = true
             }
-          }
+
+            loki.process "filter_logs" {
+              stage.drop {
+                source      = ""
+                expression  = ".*Connection closed by authenticating user root"
+                drop_counter_reason = "noisy"
+              }
+              forward_to = [loki.write.grafana_loki.receiver]
+            }
+
+            loki.write "grafana_loki" {
+              endpoint {
+                url = "http://loki:3100/loki/api/v1/push"
+              }
+            }
+
+        extraArgs:
+          - run
+          - /etc/alloy/config.alloy
+        extraVolumeMounts:
+          - name: alloy-config
+            mountPath: /etc/alloy/config.alloy
+            subPath: config.alloy
+        extraVolumes:
+          - name: alloy-config
+            configMap:
+              name: alloy-config
   destination:
     server: https://kubernetes.default.svc
     namespace: o11y
