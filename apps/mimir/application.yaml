@@ -8,23 +8,49 @@ spec:
   source:
     repoURL: https://grafana.github.io/helm-charts
     chart: mimir-distributed
-    targetRevision: 5.7.0
+    targetRevision: 5.4.0
     helm:
       values: |
-        mimir:
-          ingester:
-            persistentVolume:
-              enabled: false
-          blocks_storage:
-            backend: filesystem
-            filesystem:
-              dir: /data/tsdb
-            tsdb:
-              dir: /data/tsdb
+        image:
+          repository: docker.io/grafana/mimir
+          tag: 2.12.0
+
+        alertmanager:
+          image:
+            repository: docker.io/grafana/mimir-alertmanager
+            tag: 2.12.0
+        compactor:
+          image:
+            repository: docker.io/grafana/mimir-compactor
+            tag: 2.12.0
+        distributor:
+          image:
+            repository: docker.io/grafana/mimir-distributor
+            tag: 2.12.0
+        ingester:
+          image:
+            repository: docker.io/grafana/mimir-ingester
+            tag: 2.12.0
+        querier:
+          image:
+            repository: docker.io/grafana/mimir-querier
+            tag: 2.12.0
+        queryFrontend:
+          image:
+            repository: docker.io/grafana/mimir-query-frontend
+            tag: 2.12.0
+        ruler:
+          image:
+            repository: docker.io/grafana/mimir-ruler
+            tag: 2.12.0
+        storeGateway:
+          image:
+            repository: docker.io/grafana/mimir-store-gateway
+            tag: 2.12.0
   destination:
     namespace: observability
     server: https://kubernetes.default.svc
   syncPolicy:
     automated:
-      selfHeal: true
       prune: true
+      selfHeal: true
