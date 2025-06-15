@@ -55,7 +55,7 @@ spec:
           security:
             admin_user: admin
   destination:
-    namespace: grafana
+    namespace: o11y
     server: https://kubernetes.default.svc
   syncPolicy:
     automated:
