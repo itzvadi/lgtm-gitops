@@ -13,9 +13,7 @@ spec:
       values: |
         mode: daemon
 
-        configMap:
-          create: true
-          name: "alloy-config"
+        config:
           content: |
             prometheus.exporter.unix "local_system" { }
 
@@ -35,7 +33,10 @@ spec:
             }
 
             local.file_match "local_files" {
-              path_targets = [{"__path__" = "/var/log/*.log"}, {"__path__" = "/logs/dummy.log"}]
+              path_targets = [
+                {"__path__" = "/var/log/*.log"},
+                {"__path__" = "/logs/dummy.log"}
+              ]
               sync_period = "5s"
             }
 
@@ -65,14 +66,14 @@ spec:
           - /etc/alloy/config.alloy
 
         extraVolumeMounts:
-          - name: alloy-config
+          - name: config
             mountPath: /etc/alloy/config.alloy
             subPath: config.alloy
 
         extraVolumes:
-          - name: alloy-config
+          - name: config
             configMap:
-              name: alloy-config
+              name: alloy
   destination:
     server: https://kubernetes.default.svc
     namespace: o11y
