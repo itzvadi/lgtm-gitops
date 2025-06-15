@@ -33,7 +33,7 @@ spec:
           replicas: 1
           persistence:
             enabled: true
-            storageClass: gp2
+            storageClass: gp3  # <-- Replace with output from `kubectl get storageclass`
             size: 10Gi
 
         service:
