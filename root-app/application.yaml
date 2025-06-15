@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: lgtm-stack
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/youruser/lgtm-gitops.git
+    targetRevision: HEAD
+    path: apps
+    directory:
+      recurse: true
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true

@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mimir
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: mimir-distributed
+    targetRevision: 5.0.3
+    helm:
+      values: |
+        mimir:
+          ingester:
+            persistentVolume:
+              enabled: false
+          blocks_storage:
+            backend: filesystem
+            filesystem:
+              dir: /data/tsdb
+            tsdb:
+              dir: /data/tsdb
+  destination:
+    namespace: observability
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true

@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: grafana
+    targetRevision: 7.3.7
+    helm:
+      values: |
+        adminPassword: "admin"
+        datasources:
+          datasources.yaml:
+            apiVersion: 1
+            datasources:
+              - name: Loki
+                type: loki
+                access: proxy
+                url: http://loki:3100
+                isDefault: true
+              - name: Tempo
+                type: tempo
+                access: proxy
+                url: http://tempo:3100
+              - name: Mimir
+                type: prometheus
+                access: proxy
+                url: http://mimir-nginx:80/prometheus
+  destination:
+    namespace: observability
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
