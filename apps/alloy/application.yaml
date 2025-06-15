@@ -11,6 +11,8 @@ spec:
     targetRevision: 1.1.1
     helm:
       values: |
+        mode: daemon
+
         configMap:
           create: true
           name: "alloy-config"
@@ -61,10 +63,12 @@ spec:
         extraArgs:
           - run
           - /etc/alloy/config.alloy
+
         extraVolumeMounts:
           - name: alloy-config
             mountPath: /etc/alloy/config.alloy
             subPath: config.alloy
+
         extraVolumes:
           - name: alloy-config
             configMap:
