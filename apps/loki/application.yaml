@@ -11,6 +11,8 @@ spec:
     targetRevision: 5.43.0
     helm:
       values: |
+        mode: singleBinary
+
         loki:
           auth_enabled: false
           commonConfig:
@@ -26,6 +28,17 @@ spec:
                 index:
                   prefix: index_
                   period: 24h
+
+        singleBinary:
+          replicas: 1
+          persistence:
+            enabled: true
+            storageClass: gp2
+            size: 10Gi
+
+        service:
+          type: ClusterIP
+          port: 3100
   destination:
     namespace: observability
     server: https://kubernetes.default.svc
