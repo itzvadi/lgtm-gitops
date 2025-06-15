@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/youruser/lgtm-gitops.git
+    repoURL: https://github.com/itzvadi/lgtm-gitops.git
     targetRevision: HEAD
     path: apps
     directory:
