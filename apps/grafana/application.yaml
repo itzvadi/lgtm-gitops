@@ -11,7 +11,22 @@ spec:
     targetRevision: 7.3.7
     helm:
       values: |
-        adminPassword: "admin"
+        adminUser: admin
+        adminPassword: admin
+        persistence:
+          enabled: true
+          size: 2Gi
+        service:
+          type: ClusterIP
+        datasources:
+          datasources.yaml:
+            apiVersion: 1
+            datasources:
+              - name: Loki
+                type: loki
+                access: proxy
+                url: http://loki:3100
+                isDefault: true
   destination:
     namespace: observability
     server: https://kubernetes.default.svc
